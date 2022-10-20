@@ -7,6 +7,8 @@ The current version of directory hosts all scripts of the pipeline being used fo
 
 Briefly, the pipeline bridging takes care of build lifting, strand flipping, allele code mismatching etc. between external weights of PRS and the target genetic data, and calculation of final scores. 
 
+![PRS_using_existed_weights](https://user-images.githubusercontent.com/16557724/197066388-3d81c5f6-1886-4c7a-b3a5-a4e474c0b654.png)
+
 
 This directory is temporary and being improved, and a more generic version of pipeline for customizable genetic data and non-cloud based environment will be added.
 
