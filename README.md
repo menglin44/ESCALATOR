@@ -1,7 +1,7 @@
 # ESCALATOR
 ### polyg**E**nic **S**core **CA**lcu**LAT**ion On eu**R**eka 
 
-This README file provides basic information re background and versions of the pipeline. Please see [prs_pipeline_readme.pdf](prs_pipeline_readme.pdf) for explanations and example usages.
+This README file provides basic information re background and versions of the pipeline. Please see [prs_pipeline_readme.pdf](eureka_cloud_version/prs_pipeline_readme.pdf) for explanations and example usages.
 
 The current version of directory hosts all scripts of the pipeline being used for quality control and calculation of polygenic scores of external weights for CCPM Biobank, which is imputed against TOPMed references and hosted/run on Google cloud based Eureka HPC. 
 
