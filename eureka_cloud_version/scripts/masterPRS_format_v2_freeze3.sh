@@ -28,18 +28,18 @@ fi
 
 
 # move appropriate data into tmp space from google bucket
-gsutil -q cp ${indir}/${infile} .
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/organize_pgs_format_v2.py .
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/makebed_v2.py .
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/bin/liftOver .
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/bin/*.chain.gz .
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/getname_format_v2.py .
+gsutil -mq cp ${indir}/${infile} .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/organize_pgs_format_v2.py .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/makebed_v2.py .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/bin/liftOver .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/bin/*.chain.gz .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/getname_format_v2.py .
 
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/atcg_bed.py .
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/bed2weightchr.py .
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/bin/plink2_mar .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/atcg_bed.py .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/bed2weightchr.py .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/bin/plink2_mar .
 
-gsutil -q cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/integrate.R .
+gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/integrate.R .
 
 chmod 700 ./*
 
