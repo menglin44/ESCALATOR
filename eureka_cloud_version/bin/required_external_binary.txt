@@ -1,8 +1,0 @@
-Requiring the following external files, which are all publically downloadble - 
-
-1. liftOver
-2. plink2
-3. liftOver chain files
-
-
-Will update soon with available links.
