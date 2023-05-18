@@ -16,6 +16,9 @@ builddict={'grch38':'hg38',
 filename = sys.argv[-1]
 version = sys.argv[-2] # pgs catalog format version
 
+## pre-defined path
+dbsnp='gs://hdchpcprodtis1-staging/Reference/dbSNP'
+
 ## assert params 
 if not version in ['1', '2']:
     print 'Unrecognized params for format version. Will detect version from the headers.'
@@ -98,7 +101,8 @@ if not pastheader:
 if flag_dbsnp:
     snp2pos={} # a dict of rsID:chr_bp
     for chr in range(1,23):
-        os.system("cp /share/hennlab/reference/dbSNP/bed_chr_" + str(chr) + ".bed.gz .")
+        #os.system("gsutil -q cp gs://hdchpcprodtis1-staging/mlin/dbSNP/bed_chr_" + str(chr) + ".bed.gz .")
+        os.system("gsutil -mq cp " + dbsnp + '/bed_chr_' + str(chr) + '.bed.gz .')
         for line in gzip.open("bed_chr_" + str(chr) + ".bed.gz"):
             line = line.strip().split()
             if line[3] in rs2otherfields:
