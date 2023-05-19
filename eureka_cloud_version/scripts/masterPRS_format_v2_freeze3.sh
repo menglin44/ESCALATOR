@@ -7,11 +7,17 @@ infile=${3} # input weight file
 dest=${4} # destination google bucket to store output
 trait=${5} # trait name, if need to be left to decide as a trait_PGSxxx format from the input, input "unknown"
 
+
+
 echo "Working on input file ${infile}."
 
 # predefined path and files
-pdir='gs://hdchpcprodtis1-staging/Regeneron/merged/merged_28Feb2023_dosage'
+pdir='gs://hdchpcprodtis1-staging/Regeneron/March2022_release/merged/merged_28Feb2023_dosage'
 pfile='freeze3_dosages'
+script_path='gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline'
+bin_path='gs://hdchpcprodtis1-staging/mlin/bin'
+
+
 
 #make sure dir doesn't have a last "/"
 if [ ${dest: -1} = "/" ]
@@ -28,18 +34,18 @@ fi
 
 
 # move appropriate data into tmp space from google bucket
-gsutil -mq cp ${indir}/${infile} .
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/organize_pgs_format_v2.py .
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/makebed_v2.py .
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/bin/liftOver .
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/bin/*.chain.gz .
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/getname_format_v2.py .
+gsutil -q cp ${indir}/${infile} .
+gsutil -q cp ${script_path}/organize_pgs_format_v2.py .
+gsutil -q cp ${script_path}/makebed_v2.py .
+gsutil -q cp ${bin_path}/liftOver .
+gsutil -q cp ${bin_path}/*.chain.gz .
+gsutil -q cp ${script_path}/getname_format_v2.py .
 
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/atcg_bed.py .
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/bed2weightchr.py .
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/bin/plink2_mar .
+gsutil -q cp ${script_path}/atcg_bed.py .
+gsutil -q cp ${script_path}/bed2weightchr.py .
+gsutil -q cp ${bin_path}/plink2_mar .
 
-gsutil -mq cp gs://hdchpcprodtis1-staging/mlin/scripts/pgs_pipeline/integrate.R .
+gsutil -q cp ${script_path}/integrate.R .
 
 chmod 700 ./*
 
