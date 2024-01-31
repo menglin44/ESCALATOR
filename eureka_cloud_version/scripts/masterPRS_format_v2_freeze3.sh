@@ -7,18 +7,18 @@ infile=${3} # input weight file
 dest=${4} # destination google bucket to store output
 trait=${5} # trait name, if need to be left to decide as a trait_PGSxxx format from the input, input "unknown"
 pfile=${6} # Name of plink fileset prefix
-script_path=${7} # Full path to scripts
-bin_path=${8} # Full path to bin
+# script_path=${7} # Full path to scripts
+# bin_path=${8} # Full path to bin
 
 
 
 echo "Working on input file ${infile}."
 
 # predefined path and files
-# pdir='/scratch/alpine/mfisher@xsede.org/test_escalator'
+# pdir=''
 # pfile='freeze3_dosages_PAIR'
-# script_path='/scratch/alpine/mfisher@xsede.org/test_escalator/ESCALATOR/eureka_cloud_version/scripts'
-# bin_path='/scratch/alpine/mfisher@xsede.org/test_escalator/ESCALATOR/eureka_cloud_version/bin/prs_pipeline_bin'
+# script_path='/usr/bin'
+# bin_path='/usr/bin/'
 
 
 
