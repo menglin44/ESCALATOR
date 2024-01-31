@@ -1,10 +1,10 @@
 import sys
 
 infile=sys.argv[-2] # snpID, chr, pos, risk a, ref a, weight
-outfile = file(sys.argv[-1], 'w')
+outfile = open(sys.argv[-1], 'w')
 
 
-for i, line in enumerate(file(infile)):
+for i, line in enumerate(open(infile)):
     line = line.strip().split()
     if not line[1].startswith('chr'):
         chr = 'chr' + line[1]
