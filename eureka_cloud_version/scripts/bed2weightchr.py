@@ -23,7 +23,7 @@ import numpy as np
 speed = sys.argv[-4]
 bed = sys.argv[-3] # small file
 pvar = sys.argv[-2] # big file
-outfile = file(sys.argv[-1], 'w') #  weight file format for PLINK --score, as snpID, allele code, weight
+outfile = open(sys.argv[-1], 'w') #  weight file format for PLINK --score, as snpID, allele code, weight
 
 
 starttime=time.time()
@@ -44,9 +44,9 @@ def flipstr(geno):
 # also build a dictionary of position_sortedalleles:BEDsnpID_riskAllele_refAllele_weight
 beddict={}
 posallele2weight={}
-for i,line in enumerate(file(bed)):
+for i,line in enumerate(open(bed)):
     if i % 10000==0:
-        print 'on bed line %s' % i
+        print('on bed line %s' % i)
     line = line.strip().split() # chr, bp-1, bp, snpID, riskA, refA, weight
     pos = line[0].replace('chr', '') + ':' + line[2]
     alleles = '_'.join(sorted(line[4:6]))
@@ -56,7 +56,7 @@ for i,line in enumerate(file(bed)):
 
 bedpos = set(beddict.keys())
 dicttime=time.time()
-print 'Finished building the dictionary from bed file: %ss' % str(dicttime - starttime)
+print('Finished building the dictionary from bed file: %ss' % str(dicttime - starttime))
 
 #preprare a list of position_sortedalleles in BED file that has matched positions with pvar (regardless of allele code)
 usesnps=[]
@@ -66,10 +66,10 @@ codesnps=[]
 # read in pvar an compare
 pastheader=False
 if speed == 'T': # brief version, no output of variant list being filtered, flipped etc.
-    print 'Brief version chosen. Wont output extra documents of variants flipped, unmatched, or missing.'
-    for i,line in enumerate(file(pvar)):
+    print('Brief version chosen. Wont output extra documents of variants flipped, unmatched, or missing.')
+    for i,line in enumerate(open(pvar)):
         if i % 10000 == 0:
-            print 'on pvar line %s' % i
+            print('on pvar line %s' % i)
         if pastheader:
             line = line.strip().split()
             pos = line[0] + ':' + line[1]
@@ -114,13 +114,13 @@ if speed == 'T': # brief version, no output of variant list being filtered, flip
         elif line.startswith('#CHROM'):
             pastheader=True    
 else: # long version, output lists of variants being flipped on strand, or discarded due to either mismatching code or bp
-    out_flip = file(bed.replace('.bed', '_flipped.list'), 'w') # flip and save in weight file
-    out_mismatch = file(bed.replace('.bed', '_mismatch.list'), 'w') # need to remove from weight
-    out_missing = file(bed.replace('.bed', '_missing_in_pvar.list'), 'w') # those in BED that are not found in pvar
-    out_used = file(bed.replace('.bed', '_cleaned_forRecord.list'), 'w') # a record of variants being used
-    for i,line in enumerate(file(pvar)):
+    out_flip = open(bed.replace('.bed', '_flipped.list'), 'w') # flip and save in weight file
+    out_mismatch = open(bed.replace('.bed', '_mismatch.list'), 'w') # need to remove from weight
+    out_missing = open(bed.replace('.bed', '_missing_in_pvar.list'), 'w') # those in BED that are not found in pvar
+    out_used = open(bed.replace('.bed', '_cleaned_forRecord.list'), 'w') # a record of variants being used
+    for i,line in enumerate(open(pvar)):
         if i % 10000 ==0:
-            print 'on pvar line %s' % i
+            print('on pvar line %s' % i)
         if pastheader:
             line = line.strip().split()
             pos = line[0] + ':' + line[1]
@@ -196,7 +196,7 @@ else: # long version, output lists of variants being flipped on strand, or disca
 
 outfile.close()
 pvartime=time.time()
-print 'Finished reading and comparing pvar against dict: %ss' % str(pvartime - dicttime)
+print('Finished reading and comparing pvar against dict: %ss' % str(pvartime - dicttime))
 
 
 
