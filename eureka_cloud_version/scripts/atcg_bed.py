@@ -1,12 +1,12 @@
 import sys
 
 bed = sys.argv[-2]
-outfile = file(sys.argv[-1], 'w')
+outfile = open(sys.argv[-1], 'w')
 
-at_cg = file(bed.replace('.bed', '_at_cg.list'), 'w')
+at_cg = open(bed.replace('.bed', '_at_cg.list'), 'w')
 
 
-for line in file(bed):
+for line in open(bed):
     line = line.strip().split()
     if sorted(line[4:6]) in (['A','T'], ['C', 'G']):
         at_cg.write('%s\n' % '\t'.join(line))
