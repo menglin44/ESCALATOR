@@ -17,8 +17,8 @@ echo "Working on input file ${infile}."
 # predefined path and files
 # pdir=''
 # pfile='freeze3_dosages_PAIR'
-# script_path='/usr/bin'
-# bin_path='/usr/bin/'
+script_path='/usr/bin'
+bin_path='/usr/bin/'
 
 
 
