@@ -64,7 +64,7 @@ cd "${dest}"
 if [ "${trait}" = "unknown" ]
 then
     echo "-----Step 0: Getting pgs name-----" 
-    trait=$(python ${script_path}/getname_format_v2.py "${infile}") 
+    trait=$(/bin/python3 ${script_path}/getname_format_v2.py "${infile}") 
     echo -e "-----Done Step 0-----\n\n" 
 else
     echo -e "-----Skipping Step 0: Getting pgs name-----\n\n"
@@ -78,7 +78,7 @@ touch "${log}"
 if [ "${reform}" != "F" ]
 then
     echo "-----Step 1: Reformatting the input weight file-----" 2>&1 | tee -a "${log}"
-    python "${script_path}"/organize_pgs_format_v2.py "${reform}" "${indir}"/"${infile}"
+    /bin/python3 "${script_path}"/organize_pgs_format_v2.py "${reform}" "${indir}"/"${infile}"
     echo -e "-----Done Step 1-----\n\n" 2>&1 | tee -a "${log}"
     #newname=$(echo ${infile} | sed 's/\.txt/_reformated\.txt/g' | sed 's/\.gz//g')
     newname38=$(echo "${infile}" | sed 's/\.txt/_hg38_reformated\.txt/g' | sed 's/\.gz//g')
@@ -145,7 +145,7 @@ nsnps=$(wc -l "${indir}"/"${newinfile}" | awk '{print $1}')
 echo "Total number of input weight file: ${nsnps}." 2>&1 | tee -a "${log}"
 
 # convert to BED format: chr#, pos-1, pos, risk allele, other allele, weight
-python ${script_path}/makebed_v2.py "${indir}"/"${newinfile}" "${dest}"/"${newinfile}".bed
+/bin/python3 ${script_path}/makebed_v2.py "${indir}"/"${newinfile}" "${dest}"/"${newinfile}".bed
 
 # liftOver to hg38
 if [[ "${lift}" != "F" ]]
@@ -206,7 +206,7 @@ do
     #gsutil -qm cp gs://hdchpcprodtis1-staging/mlin/freeze2_pgen/chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.* .
     # gsutil -qm cp ${pdir}/chr${CHR}_${pfile}.* .
     # remove ambiguous loci
-    python ${script_path}/atcg_bed.py "${dest}"/chr"${CHR}"_"${trait}"_hg38.bed "${dest}"/chr"${CHR}"_"${trait}"_hg38_noAtCg.bed # also output another bed chr${CHR}_${trait}_hg38_at_cg.list
+    /bin/python3 ${script_path}/atcg_bed.py "${dest}"/chr"${CHR}"_"${trait}"_hg38.bed "${dest}"/chr"${CHR}"_"${trait}"_hg38_noAtCg.bed # also output another bed chr${CHR}_${trait}_hg38_at_cg.list
     bed="chr${CHR}_${trait}_hg38_noAtCg.bed"
     nout=$(wc -l "${dest}"/"${bed}" | awk '{print $1}')
     n_atcg=$((nline - nout))
@@ -214,8 +214,8 @@ do
     
     
     # match against pvar file, flip strand, remove unmatched / tri-allelic codes etc., and make into a weight file for PLINK
-    #python bed2weightchr.py F ${bed} chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.pvar chr${CHR}_${trait}_hg38_noAtCg_clean.weights 
-    python ${script_path}/bed2weightchr.py F "${dest}"/"${bed}" "${indir}"/chr"${CHR}"_${pfile}.pvar "${dest}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_clean.weights 
+    #/bin/python3 bed2weightchr.py F ${bed} chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.pvar chr${CHR}_${trait}_hg38_noAtCg_clean.weights 
+    /bin/python3 ${script_path}/bed2weightchr.py F "${dest}"/"${bed}" "${indir}"/chr"${CHR}"_${pfile}.pvar "${dest}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_clean.weights 
     ## also output chr${CHR}_${trait}_hg38_noAtCg_flipped.list,
     ## chr${CHR}_${trait}_hg38_noAtCg_mismatch.list,
     ## chr${CHR}_${trait}_hg38_noAtCg_missing_in_pvar.list
