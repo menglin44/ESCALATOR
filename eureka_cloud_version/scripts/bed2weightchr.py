@@ -176,7 +176,7 @@ else: # long version, output lists of variants being flipped on strand, or disca
         elif line.startswith('#CHROM'):
             pastheader=True    
     # output the list of BED positions unmatched in pvar, or mismatched allele codes in pvar
-    bedvar = np.array(posallele2weight.keys())
+    bedvar = np.array(list(posallele2weight.keys()))
     usedvar = np.array(usesnps)
     codevar = np.array(codesnps)
     missing_var = np.setdiff1d(bedvar, usedvar)
