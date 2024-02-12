@@ -35,6 +35,11 @@ then
     indir="${temp}"
 fi
 
+if [ ! -d "${dest}" ]
+then
+    mkdir "${dest}"
+fi
+
 cd "${dest}"
 
 # move appropriate data into tmp space from google bucket
