@@ -173,7 +173,7 @@ fi
 mv "${dest}"/"${bed}" "${dest}"/"${trait}"_hg38_allchr.bed
 
 # keeping only autosomal variants and count
-for i in {21..22}
+for i in {1..22}
 do
     awk '{if ($1=="chr""'"$i"'") print}' "${dest}"/"${trait}"_hg38_allchr.bed >> "${dest}"/"${trait}"_hg38.bed
 done
