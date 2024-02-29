@@ -1,0 +1,71 @@
+Bootstrap: docker
+From: centos:7
+IncludeCmd: yes
+
+  
+%post
+  NOW=`date`
+  echo "export NOW=\"${NOW}\"" >> $SINGULARITY_ENVIRONMENT
+
+  yum update -y && \
+  yum install -y \
+  yum install vim-minimal \
+  openssl-devel \
+  libuuid-devel \
+  libseccomp-devel \
+  wget \
+  squashfs-tools \
+  cryptsetup \
+  git
+
+  yum update
+
+  yum install -y vim
+  yum -y install python3
+  yum -y install python3-pip
+  pip3 install numpy
+  which python3
+
+  yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  yum -y install R
+  echo 'install.packages("data.table", repos="http://cran.rstudio.com/")' > /tmp/install.R
+  Rscript /tmp/install.R
+  
+  git clone https://github.com/MatthewFisher126/ESCALATOR.git
+
+  chmod 775 ESCALATOR/eureka_cloud_version/scripts/*
+  cp ESCALATOR/eureka_cloud_version/scripts/* /usr/bin/
+  tar -xzvf ESCALATOR/eureka_cloud_version/bin/prs_pipeline_bin.tar.gz -C ESCALATOR/eureka_cloud_version/bin/
+  chmod 775 ESCALATOR/eureka_cloud_version/bin/prs_pipeline_bin/*
+  cp ESCALATOR/eureka_cloud_version/bin/prs_pipeline_bin/* /usr/bin/
+
+
+#%environment
+#    export PATH=$PATH:plink
+
+#%files     #might not need this section since it downloads everything from github...
+#	ref_files/* /ref_files/			#can I use wildcard matching here?
+
+%runscript
+	echo "Container was created $NOW"
+	echo "Arguments received: $*"
+	exec /usr/bin/masterPRS_format_v2_freeze3.sh "$@"
+	exec python3 "$@"
+	
+%test
+	echo "Current directory is"
+	echo $PWD
+	ls
+	ls /usr/bin
+
+%labels
+	Author Matthew Fisher
+	Version v0.0.1
+
+%help
+	This is a container for running ESCALATOR. The container contains a version of ESCALATOR (current as of the date of the container building).
+	To run ESCALATOR in the container:
+	singularity exec escalator-V1.sif masterPRS_format_v2_freeze3.sh args
+	
+	Ex:
+	echo "singularity exec masterPRS_format_v2_freeze3.sh [reformatting script designed (1, 2, or F)] [input directory (where weight file is)] [weight input filename] [output directory] [trait name (trait_PGSxxx)] [pfile directory] [pfile prefix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]"
