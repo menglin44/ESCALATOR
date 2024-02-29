@@ -6,7 +6,8 @@ indir=${2}
 infile=${3} # input weight file
 dest=${4} # destination google bucket to store output
 trait=${5} # trait name, if need to be left to decide as a trait_PGSxxx format from the input, input "unknown"
-pfile=${6} # Name of plink fileset prefix
+pfile_dir=${6} # Directory where the pfiles are
+pfile=${7} # Name of plink fileset prefix AFTER chr# [ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]
 # script_path=${7} # Full path to scripts
 # bin_path=${8} # Full path to bin
 
@@ -196,7 +197,7 @@ echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tOriginalRiskAllele\tOriginalRefAlle
 echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tUpdatedSNPID\tUpdatedRiskAllele\tUpdatedRefAllele\tWeight' > "${dest}"/"${trait}"_hg38_noAtCg_cleaned_forRecord.list
 
 n_atcg_all=0 # keep the counts of at/cg loci
-for CHR in {21..22}
+for CHR in {1..22}
 do
 
     # subset to this chromosome
@@ -220,7 +221,7 @@ do
     
     # match against pvar file, flip strand, remove unmatched / tri-allelic codes etc., and make into a weight file for PLINK
     #/bin/python3 bed2weightchr.py F ${bed} chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.pvar chr${CHR}_${trait}_hg38_noAtCg_clean.weights 
-    /bin/python3 ${script_path}/bed2weightchr.py F "${dest}"/"${bed}" "${indir}"/chr"${CHR}"_${pfile}.pvar "${dest}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_clean.weights 
+    /bin/python3 ${script_path}/bed2weightchr.py F "${dest}"/"${bed}" "${pfile_dir}"/chr"${CHR}"_${pfile}.pvar "${dest}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_clean.weights 
     ## also output chr${CHR}_${trait}_hg38_noAtCg_flipped.list,
     ## chr${CHR}_${trait}_hg38_noAtCg_mismatch.list,
     ## chr${CHR}_${trait}_hg38_noAtCg_missing_in_pvar.list
@@ -251,7 +252,7 @@ do
     #./plink2_mar --pfile chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated \
     #             --score ${weight} list-variants \
     #             --out chr${CHR}_${trait}_prs
-    ${bin_path}/plink2_mar --pfile "${indir}"/chr"${CHR}"_${pfile} \
+    ${bin_path}/plink2_mar --pfile "${pfile_dir}"/chr"${CHR}"_${pfile} \
                  --score "${dest}"/"${weight}" list-variants \
                  --out "${dest}"/chr"${CHR}"_${trait}_prs    
     
