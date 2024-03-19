@@ -31,7 +31,7 @@ IncludeCmd: yes
   echo 'install.packages("data.table", repos="http://cran.rstudio.com/")' > /tmp/install.R
   Rscript /tmp/install.R
   
-  git clone https://github.com/MatthewFisher126/ESCALATOR.git
+  git clone -b development_ml https://github.com/MatthewFisher126/ESCALATOR.git
 
   chmod 775 ESCALATOR/eureka_cloud_version/scripts/*
   cp ESCALATOR/eureka_cloud_version/scripts/* /usr/bin/
