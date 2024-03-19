@@ -24,11 +24,11 @@ for(filename in as.character(score.list$V1)){
   }else{
     if(coln==5){
       infile$tempID <- paste(infile$V1, infile$V2, sep=':')
-      temp_score <- infile$V5[match(scores$tempID, infile$tempID)]
+      temp_score <- as.numeric(infile$V5[match(scores$tempID, infile$tempID)])
       temp_score2 <- temp_score + scores$scores
       scores$scores <- as.numeric(temp_score2)
     }else if(coln==4){
-      temp_score <- infile$V4[match(scores$ID, infile$V1)]
+      temp_score <- as.numeric(infile$V4[match(scores$ID, infile$V1)])
       temp_score2 <- temp_score + scores$scores
       scores$scores <- as.numeric(temp_score2)
     }else{
