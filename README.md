@@ -8,11 +8,11 @@ This is a pipeline for harmonizing and calculating polygenic scores on a genetic
 
 * The original pipeline, specifically developed and to run on Eureka cloud platform for Colorado Center for Personalized Medicine, is located under the subfolder [eureka_cloud_version](eureka_cloud_version)
 
-* For general use on extensive platforms, we provide a containerized version. Due to the file size of the container image, we do not host the image in this github, but offer
+* For general use on extensive platforms, we provide a containerized version. Due to the file size of the container image, we do not host the image in this github, instead we offer
 
    - (1) the scripts and def file to build your container, with [instructions](https://github.com/MatthewFisher126/ESCALATOR?tab=readme-ov-file#using-the-container) from Matthew Fisher (matthew.j.fisher@cuanschutz.edu),
 
-   - (2) or as an alternate, directly download the container image momentarily hosted on the onedrive [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/EWWez0EbEW9HmgKnQmO8WtoB1fMJ2K1gavSAg5WL_PBYig?e=V5COT1).
+   - (2) or as an alternate, directly download the container image momentarily hosted [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/ETTottyQgt5Akp3LkiORfFkBvmfnutRTTSHXQ3nlIAPIhg?e=VtdkJe).
  
 (Please refer to the [separate folk](https://github.com/MatthewFisher126/ESCALATOR) for Matt's explanations and changes of generalized scripts and instructions of building the container)
 
