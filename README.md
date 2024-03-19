@@ -1,18 +1,58 @@
-# ESCALATOR
-### polyg**E**nic **S**core **CA**lcu**LAT**ion On eu**R**eka 
+# ESCALATOR README
 
-This README file provides basic information re background and versions of the pipeline. Please see [prs_pipeline_readme.pdf](eureka_cloud_version/prs_pipeline_readme.pdf) for explanations and example usages. (Note: the master/wrapper script **masterPRS_format_v2_freeze3.sh** is located under scripts/ folder)
+Feel free to fork ESCALATOR itself from this github page or you can make it into a container. The tool/container will work in a SLURM environment or locally but it is recommended to use in a SLURM environment if your data set is large.  
 
-The current version of directory hosts all scripts of the pipeline being used for quality control and calculation of polygenic scores of external weights for CCPM Biobank, which is imputed against TOPMed references and hosted/run on Google cloud based Eureka HPC. 
+## Using ESCALATOR by forking: 
 
-Briefly, the pipeline takes care of build lifting, strand flipping, allele code mismatching etc. between external weights of PRS and the target genetic data, and calculation of final scores. 
+**Note: You will need to fork this repo and edit the masterPRS_format_v2_freeze3.sh. Uncomment script_path and bin_path on lines 11 and 12 and comment out the same variables on lines 21 and 22.**
 
+You will also need to unzip the prs_pipeline_bin.tar.gz file to access liftover and plink. 
 
-![PRS_using_existed_weights](https://user-images.githubusercontent.com/16557724/223905146-c5acf2ae-9a67-4576-bbcc-8781e3e89073.png)
+Once the above step is complete, simply run the wrapper with the required arguments. 
 
+An example is below:
+```
+# Arguments
+Bash masterPRS_format_v2_freeze3.sh [reformatting script designed (1, 2, or F)] \
+[input directory (where weight file is)] \
+[weight input filename] \
+[output directory] \
+[trait name (trait_PGSxxx)] \
+[pfile directory] \
+[pfile prefix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]
+[path to scripts] \
+[path to prs_pipeline_bin (plink and liftover)]
 
+# Example
+bash masterPRS_format_v2_freeze3.sh 2 \
+./test_escalator/ \
+non_hla_escalator_input.txt \
+./out_escalator/ \
+GRS2_non_hla \
+./freeze3_w_dosages \
+freeze3_dosages_PAIR \
+./ESCALATOR/eureka_cloud_version/scripts/ \
+./ESCALATOR/eureka_cloud_version/bin/prs_pipeline_bin/
+``` 
 
-This directory is temporary and being improved, and a more generic version of pipeline / container for customizable genetic data and non-cloud based environment will be added.
+## Using the container:
 
-meng.lin@cuanschutz.edu
+You can download the escalator.def file and create the container on https://cloud.sylabs.io/. You will also need singularity installed locally or on your HPC. 
 
+Running the container is almost the same as above but you will specify the container name, the wrapper script, and then all of the arguments. Simply run the below:
+
+```
+singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh [reformatting script designed (1, 2, or F)] \
+[input directory (where weight file is)] \
+[weight input filename] \
+[output directory] \
+[trait name (trait_PGSxxx)] \
+[pfile directory] \
+[pfile prefix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]
+```
+
+You can also run the below to get similar information on running the container:
+
+```
+singularity run-help <container_name>.sif
+```

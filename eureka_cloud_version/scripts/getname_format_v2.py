@@ -6,7 +6,7 @@ filename = sys.argv[-1]
 if filename.endswith('.gz'):
     infile = gzip.open(filename)
 else:
-    infile = file(filename)
+    infile = open(filename)
 
 
 #trait='unknown'
@@ -28,4 +28,4 @@ for line in infile:
 assert pgs!="unknown", "Didn't detect [# PGS ID] or [#pgs_id] in the header of the input file. Consider manually inputting a trait name."
 
 
-print '%s' % (pgs)
+print('%s' % (pgs))
