@@ -247,7 +247,7 @@ do
     #             --score ${weight} list-variants \
     #             --out chr${CHR}_${trait}_prs
     ${bin_path}/plink2_mar --pfile "${pfile_dir}"/chr"${CHR}"_${pfile} \
-                 --score "${dest2}"/"${weight}" list-variants \
+                 --score "${dest2}"/"${weight}" list-variants no-mean-imputation \
                  --out "${dest2}"/chr"${CHR}"_${trait}_prs    
 
 
