@@ -15,9 +15,9 @@ builddict = {
 }
 
 build_field_dict = { # catalog version : build header
-    "1": "Original Genome Build"
-    "2": "genome_build"
-    "3":"HmPOS_build=GRCh38"
+    "1": "Original Genome Build",
+    "2": "genome_build",
+    "3":"HmPOS_build",
 }
 
 filename = sys.argv[-1]
@@ -35,7 +35,7 @@ if not version in ["1", "2", "3"]:
 
 
 if filename.endswith(".gz"):
-    infile = gzip.open(filename)
+    infile = gzip.open(filename, mode='rt')
 else:
     infile = open(filename)
 
