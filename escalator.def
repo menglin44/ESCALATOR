@@ -59,13 +59,13 @@ IncludeCmd: yes
 	ls /usr/bin
 
 %labels
-	Author Matthew Fisher
-	Version v0.0.1
+	Author Meng Lin; Matthew Fisher
+	Version v1.0.0
 
 %help
-	This is a container for running ESCALATOR. The container contains a version of ESCALATOR (current as of the date of the container building).
+	This is a container for running ESCALATOR (verion v1.0.0). The container contains a version of ESCALATOR (current as of the date of the container building).
 	To run ESCALATOR in the container:
-	singularity exec escalator-V1.sif masterPRS_format_v2_freeze3.sh args
+	singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh args
 	
 	Ex:
 	singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh [reformatting script designed (1, 2, or F)] [input directory (where weight file is)] [weight input filename] [output directory] [trait name (trait_PGSxxx)] [pfile directory] [pfile prefix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]
