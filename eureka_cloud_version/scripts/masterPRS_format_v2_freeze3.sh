@@ -1,29 +1,18 @@
 #!/bin/sh
 
-# system input variables
-reform=${1} # using reformatting script designed for pgs catalog cleanup; 1, 2, or F
+## system input variables
+reform=${1} # using reformatting script designed for pgs catalog cleanup; 1, 2, 3, or F
 indir=${2}
 infile=${3} # input weight file
 dest=${4} # destination google bucket to store output
 trait=${5} # trait name, if need to be left to decide as a trait_PGSxxx format from the input, input "unknown"
 pfile_dir=${6} # Directory where the pfiles are
-pfile=${7} # Name of plink fileset prefix AFTER chr# [ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]
+pfile=${7} # Name of plink fileset midfix AFTER "chr#_" [ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]
+rm_amb=${8} # T, or F to remove ambiguous variants. Default is T.
 # script_path=${7} # Full path to scripts
 # bin_path=${8} # Full path to bin
 
-
-
-echo "Working on input file ${infile}."
-
-# predefined path and files
-# pdir=''
-# pfile='freeze3_dosages_PAIR'
-script_path='/usr/bin'
-bin_path='/usr/bin/'
-
-
-
-#make sure dir doesn't have a last "/"
+# make sure dir doesn't have a last "/"
 if [ "${dest: -1}" = "/" ]
 then
     temp="${dest%?}"
@@ -40,8 +29,48 @@ if [ ! -d "${dest}" ]
 then
     mkdir "${dest}"
 fi
+#cd "${dest}"
 
-cd "${dest}"
+
+# make a temporary output folder with timestamp for intermediate files
+starttime=`date +%s`
+mkdir "${dest}"/"temp_${starttime}"
+dest2="${dest}"/"temp_${starttime}"
+
+# create a log file
+log="${dest}"/"${trait}_prs.log"
+touch "${log}"
+
+
+## report params
+echo "Input weight file ${indir}/${infile}." 2>&1 | tee -a "${log}"
+if [ "${reform}" = "F" ]
+then 
+    echo "Weight file is indicated to be already reformatted. Will skip reformatting. " 2>&1 | tee -a "${log}"
+else
+    echo "Weight file is indicated to be in the format of catalog version ${reform}." 2>&1 | tee -a "${log}"
+fi
+echo "Will read autosomal genetic data from ${pfile_dir}/chr*_${pfile}.p*" 2>&1 | tee -a "${log}"
+echo "Will write all output to ${dest}." 2>&1 | tee -a "${log}"
+if [ "${rm_amb}" = "F" ]
+then
+    echo "User has opted for keeping variants with ambiguous allele code (e.g. A/T, C/G)." 2>&1 | tee -a "${log}"
+else
+    echo "Variants with ambiguous allele code (e.g. A/T, C/G) will be removed." 2>&1 | tee -a "${log}"
+    rm_amb="T"
+fi
+echo '....................................................................................................' 2>&1 | tee -a "${log}"
+echo -e '\n\n' 2>&1 | tee -a "${log}"
+## end of report params
+
+
+
+# predefined path for scripts and bin 
+# pdir=''
+# pfile='freeze3_dosages_PAIR'
+script_path='/usr/bin'
+bin_path='/usr/bin/'
+
 
 
 
@@ -49,7 +78,7 @@ cd "${dest}"
 #@@@ Step I Preprocessing weight file @@@#
 ##########################################
 
-# substract trait and PGS number to be part of the prefix
+# extract trait or PGS number to be part of the output prefix
 if [ "${trait}" = "unknown" ]
 then
     echo "-----Step 0: Getting pgs name-----" 
@@ -58,16 +87,6 @@ then
 else
     echo -e "-----Skipping Step 0: Getting pgs name-----\n\n"
 fi
-
-# temp folder with timestamp
-starttime=`date +%s`
-mkdir "${dest}"/"temp_${starttime}"
-dest2="${dest}"/"temp_${starttime}"
-
-#log file
-log="${dest}"/"${trait}_prs.log"
-touch "${log}"
-
 
 
 
@@ -185,16 +204,17 @@ echo "-----Step 3: Preparing to calculate PRS per chr-----" 2>&1 | tee -a "${log
 echo "Will find overlapped loci in pvar files, remove at/cg, allele-mismatching, and flip strand accordingly. " 2>&1 | tee -a "${log}"
 
 touch ${dest2}/score.list
-echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tUpdatedSNPID\tOriginalRiskAllele\tOriginalRefAllele\tWeight' > "${dest2}"/"${trait}"_hg38_noAtCg_flipped.list
-echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tOriginalRiskAllele\tOriginalRefAllele\tWeight' > "${dest2}"/"${trait}"_hg38_noAtCg_mismatch.list
-echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tOriginalRiskAllele\tOriginalRefAllele\tWeight' > "${dest2}"/"${trait}"_hg38_noAtCg_missing_in_pvar.list
-echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tUpdatedSNPID\tUpdatedRiskAllele\tUpdatedRefAllele\tWeight' > "${dest2}"/"${trait}"_hg38_noAtCg_cleaned_forRecord.list
+echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tUpdatedSNPID\tOriginalRiskAllele\tOriginalRefAllele\tWeight' > "${dest2}"/"${trait}"_flipped.list
+echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tOriginalRiskAllele\tOriginalRefAllele\tWeight' > "${dest2}"/"${trait}"_mismatch.list
+echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tOriginalRiskAllele\tOriginalRefAllele\tWeight' > "${dest2}"/"${trait}"_missing_in_pvar.list
+echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tUpdatedSNPID\tUpdatedRiskAllele\tUpdatedRefAllele\tWeight' > "${dest2}"/"${trait}"_cleaned_forRecord.list
+echo -e 'CHR(hg38)\tBP(hg38)\tOriginalSNPID\tOriginalRiskAllele\tOriginalRefAllele\tWeight' > "${dest2}"/"${trait}"_at_cg.list
 
 n_atcg_all=0 # keep the counts of at/cg loci
 for CHR in {1..22}
 do
 
-    # subset to this chromosome
+    # subset weight bed file to the current working chromosome
     awk 'BEGIN {OFS="\t"}{if ($1=="chr""'"${CHR}"'") print $0}' "${dest2}"/"${trait}"_hg38.bed > "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed
     # skip if no variants present
     nline=$(wc -l "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed | awk '{print $1}')
@@ -205,13 +225,22 @@ do
     # cp the pgen file
     #gsutil -qm cp gs://hdchpcprodtis1-staging/mlin/freeze2_pgen/chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.* .
     # gsutil -qm cp ${pdir}/chr${CHR}_${pfile}.* .
-    # remove ambiguous loci
-    /bin/python3 ${script_path}/atcg_bed.py "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg.bed # also output another bed chr${CHR}_${trait}_hg38_at_cg.list
-    bed="chr${CHR}_${trait}_hg38_noAtCg.bed"
-    nout=$(wc -l "${dest2}"/"${bed}" | awk '{print $1}')
-    n_atcg=$((nline - nout))
-    n_atcg_all=$((n_atcg_all + n_atcg))
     
+    # remove ambiguous loci (or not)
+    if [[ "${rm_amb}" == "T" ]]
+    then
+        /bin/python3 ${script_path}/atcg_bed.py "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg.bed # also output another bed chr${CHR}_${trait}_hg38_at_cg.list
+        bed="chr${CHR}_${trait}_hg38_noAtCg.bed"
+        nout=$(wc -l "${dest2}"/"${bed}" | awk '{print $1}')
+        n_atcg=$((nline - nout))
+        n_atcg_all=$((n_atcg_all + n_atcg))
+    else
+        mv "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg.bed # for keeping downstream file names consistent - "noAtCg" in the name doesnt mean amb var removed
+        touch chr${CHR}_${trait}_hg38_at_cg.list # an empty file
+        bed="chr${CHR}_${trait}_hg38_noAtCg.bed"
+        nout=$(wc -l "${dest2}"/"${bed}" | awk '{print $1}')
+        n_atcg_all=0
+    fi
     
     # match against pvar file, flip strand, remove unmatched / tri-allelic codes etc., and make into a weight file for PLINK
     #/bin/python3 bed2weightchr.py F ${bed} chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.pvar chr${CHR}_${trait}_hg38_noAtCg_clean.weights 
@@ -232,11 +261,12 @@ do
     if [[ "${nline}" == "0" ]]
     then
         # write snp info (flipped, discarded) to an integrated list
-        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_flipped.list >> "${dest2}"/"${trait}"_hg38_noAtCg_flipped.list
-        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_mismatch.list >> "${dest2}"/"${trait}"_hg38_noAtCg_mismatch.list
-        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_missing_in_pvar.list >> "${dest2}"/"${trait}"_hg38_noAtCg_missing_in_pvar.list
+        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_flipped.list >> "${dest2}"/"${trait}"_flipped.list
+        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_mismatch.list >> "${dest2}"/"${trait}"_mismatch.list
+        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_missing_in_pvar.list >> "${dest2}"/"${trait}"_missing_in_pvar.list
         cat "${dest2}"/chr"${CHR}"_duplicated.snps >> "${dest2}"/"${trait}"_duplicated.list
-        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_cleaned_forRecord.list >> "${dest2}"/"${trait}"_hg38_noAtCg_cleaned_forRecord.list
+        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_cleaned_forRecord.list >> "${dest2}"/"${trait}"_cleaned_forRecord.list
+        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_at_cg.list >> "${dest2}"/"${trait}"_at_cg.list
         #rm chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.*
         # rm chr${CHR}_${pfile}.* #uncomment
         continue
@@ -267,12 +297,12 @@ do
     # write score name to a list
     echo "${dest2}"/chr"${CHR}"_${trait}_prs.sscore >> "${dest2}"/score.list
     # write snp info (flipped, discarded) to an integrated list
-    cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_flipped.list >> "${dest2}"/"${trait}"_hg38_noAtCg_flipped.list
-    cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_mismatch.list >> "${dest2}"/"${trait}"_hg38_noAtCg_mismatch.list
-    cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_missing_in_pvar.list >> "${dest2}"/"${trait}"_hg38_noAtCg_missing_in_pvar.list
-    cat "${dest2}"/chr"${CHR}"_duplicated.snps >> "${dest2}"/"${trait}"_duplicated.list
-    cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_cleaned_forRecord.list >> "${dest2}"/"${trait}"_hg38_noAtCg_cleaned_forRecord.list
-
+      cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_flipped.list >> "${dest2}"/"${trait}"_flipped.list
+      cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_mismatch.list >> "${dest2}"/"${trait}"_mismatch.list
+      cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_missing_in_pvar.list >> "${dest2}"/"${trait}"_missing_in_pvar.list
+      cat "${dest2}"/chr"${CHR}"_duplicated.snps >> "${dest2}"/"${trait}"_duplicated.list
+      cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_cleaned_forRecord.list >> "${dest2}"/"${trait}"_cleaned_forRecord.list
+      cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_at_cg.list >> "${dest2}"/"${trait}"_at_cg.list
 done
 echo -e "-----Done Step 3: Preparing to calculate PRS per chr-----\n\n" 2>&1 | tee -a "${log}"
 
@@ -294,11 +324,11 @@ fi
 Rscript ${script_path}/integrate.R "${dest2}"/score.list "${dest}"/"${trait}"_prs.sscore
 
 # organize the log report on # of snps
-nflip=$(wc -l "${dest2}"/${trait}_hg38_noAtCg_flipped.list | awk '{print $1}')
-nmis=$(wc -l "${dest2}"/${trait}_hg38_noAtCg_mismatch.list | awk '{print $1}')
-nmissing=$(wc -l "${dest2}"/${trait}_hg38_noAtCg_missing_in_pvar.list | awk '{print $1}')
+nflip=$(wc -l "${dest2}"/${trait}_flipped.list | awk '{print $1}')
+nmis=$(wc -l "${dest2}"/${trait}_mismatch.list | awk '{print $1}')
+nmissing=$(wc -l "${dest2}"/${trait}_missing_in_pvar.list | awk '{print $1}')
 ndup=$(wc -l "${dest2}"/${trait}_duplicated.list | awk '{print $1}')
-nused=$(wc -l "${dest2}"/${trait}_hg38_noAtCg_cleaned_forRecord.list | awk '{print $1}')
+nused=$(wc -l "${dest2}"/${trait}_cleaned_forRecord.list | awk '{print $1}')
 echo "Number of ambigous A/T, C/G loci that are removed: ${n_atcg_all}" | tee -a "${log}"
 echo "Number of weight SNPs that are flipped to the other strand: $((nflip-1))" | tee -a "${log}"
 echo "Number of SNPs with mismatched allele codes against pgen that are removed: $((nmis-1))" | tee -a "${log}"
@@ -326,8 +356,7 @@ fi
 #cp "${dest2}"/"${trait}"_duplicated.list "${dest2}/"recordfiles/
 
 # mv record files to recrodfiles/ subfolder, instead of copying them 0315
-mv "${dest2}"/"${trait}"_hg38_noAtCg*.list "${dest}"/recordfiles/
-mv "${dest2}"/"${trait}"_duplicated.list "${dest}"/recordfiles/
+mv "${dest2}"/"${trait}"_*.list "${dest}"/recordfiles/
 
 
 # clean up 0315
