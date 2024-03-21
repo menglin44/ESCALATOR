@@ -65,134 +65,135 @@ codesnps=[]
 
 # read in pvar an compare
 pastheader=False
-if speed == 'T': # brief version, no output of variant list being filtered, flipped etc.
-    print('Brief version chosen. Wont output extra documents of variants flipped, unmatched, or missing.')
-    for i,line in enumerate(open(pvar)):
-        if i % 10000 == 0:
-            print('on pvar line %s' % i)
-        if pastheader:
-            line = line.strip().split()
-            pos = line[0] + ':' + line[1]
-            alleles = '_'.join(sorted(line[3:5]))
-            snp = line[2]
-            if pos not in bedpos: #position not found in BED
-                continue
-            elif beddict.get(pos, 'n_n') == alleles: # positions overlap and allele code matches between bed and pvar
-                tempinfo = posallele2weight.get(pos+'_'+alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
-                if tempinfo[1] == line[4]: #risk allele is also the alternative allele:
-                    if tempinfo[3] =='NA':
-                        tempinfo[3] = '0'
-                    outfile.write('%s\n' % '\t'.join([snp, tempinfo[1], tempinfo[3]]))
-                else: # risk allele is the reference allele in pvar
-                    if tempinfo[3]=='NA':
-                        weight='0'
-                    elif tempinfo[3].startswith('-'): #negative value
-                        weight = tempinfo[3].strip('-')
-                    else: # positive value,
-                        weight = '-' + tempinfo[3]
-                    outfile.write('%s\n' % '\t'.join([snp, tempinfo[2], weight]))
-            elif beddict.get(pos, 'n_n') == '_'.join(sorted([flipstr(line[3]), flipstr(line[4])])): # positions overlap but strand flipped
-                bed_alleles = beddict.get(pos, 'n_n')
-                tempinfo = posallele2weight.get(pos+'_'+ bed_alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
-                #flipped = flip.get(tempinfo[1], 'unknown_code')
-                flipped = flipstr(tempinfo[1])
-                if flipped == line[4]: #risk allele is also the alternative allele
-                    if tempinfo[3] =='NA':
-                        tempinfo[3] = '0'
-                    outfile.write('%s\n' % '\t'.join([snp, flipped, tempinfo[3]]))
-                else: # risk allele is the reference allele in pvar
-                    if tempinfo[3]=='NA':
-                        weight='0'
-                    elif tempinfo[3].startswith('-'): #negative value
-                        weight = tempinfo[3].strip('-')
-                    else: # positive value
-                        weight = '-' + tempinfo[3]
-                    flipped = flipstr(tempinfo[2])
-                    outfile.write('%s\n' % '\t'.join([snp, flipped, weight]))
-            else: # position overlap, but allele code don't match regardless of flipping
-                continue
-        elif line.startswith('#CHROM'):
-            pastheader=True    
-else: # long version, output lists of variants being flipped on strand, or discarded due to either mismatching code or bp
-    out_flip = open(bed.replace('.bed', '_flipped.list'), 'w') # flip and save in weight file
-    out_mismatch = open(bed.replace('.bed', '_mismatch.list'), 'w') # need to remove from weight
-    out_missing = open(bed.replace('.bed', '_missing_in_pvar.list'), 'w') # those in BED that are not found in pvar
-    out_used = open(bed.replace('.bed', '_cleaned_forRecord.list'), 'w') # a record of variants being used
-    for i,line in enumerate(open(pvar)):
-        if i % 10000 ==0:
-            print('on pvar line %s' % i)
-        if pastheader:
-            line = line.strip().split()
-            pos = line[0] + ':' + line[1]
-            alleles = '_'.join(sorted(line[3:5]))
-            snp = line[2]
-            if pos not in bedpos: #position not found in BED
-                continue
-            elif beddict.get(pos, 'NA') == alleles: # positions overlap and allele code matches between bed and pvar
-                tempinfo = posallele2weight.get(pos+'_'+alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
-                if tempinfo[1] == line[4]: #risk allele is also the alternative allele:
-                    if tempinfo[3] =='NA':
-                        tempinfo[3] = '0'
-                    outfile.write('%s\n' % '\t'.join([snp, tempinfo[1], tempinfo[3]]))
-                    out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp] + tempinfo[1:]))
-                else: # risk allele is the reference allele in pvar
-                    if tempinfo[3] == 'NA':
-                        weight = '0'
-                    elif tempinfo[3].startswith('-'): #negative value
-                        weight = tempinfo[3].strip('-')
-                    else: # positive value
-                        weight = '-' + tempinfo[3]
-                    outfile.write('%s\n' % '\t'.join([snp, tempinfo[2], weight]))
-                    out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp, tempinfo[2], tempinfo[1], weight]))
-                usesnps.append(pos + '_' + alleles)
-                codesnps.append(pos + '_' + alleles)  
-            elif beddict.get(pos, 'n_n') == '_'.join(sorted([flipstr(line[3]), flipstr(line[4])])): # positions overlap but strand flipped
-                bed_alleles = beddict.get(pos, 'n_n')
-                tempinfo = posallele2weight.get(pos+'_'+bed_alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
-                flipped = flipstr(tempinfo[1])
-                if flipped == line[4]: #risk allele is also the alternative allele
-                    if tempinfo[3] =='NA':
-                        tempinfo[3] = '0'
-                    outfile.write('%s\n' % '\t'.join([snp, flipped, tempinfo[3]]))
-                    out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp, flipped, flipstr(tempinfo[2]), tempinfo[3]])) # needed to flip both risk and ref for the correct record
-                else: # risk allele is the reference allele in pvar
-                    if tempinfo[3] == 'NA':
-                        weight = '0'
-                    elif tempinfo[3].startswith('-'): #negative value
-                        weight = tempinfo[3].strip('-')
-                    else: # positive value
-                        weight = '-' + tempinfo[3]
-                    flipped = flipstr(tempinfo[2])
-                    outfile.write('%s\n' % '\t'.join([snp, flipped, weight]))
-                    out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp, flipped, flipstr(tempinfo[1]), weight])) # needed to flip both risk and ref for the correct record
-                out_flip.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp] + tempinfo[1:])) # write chr, pos, OriginalsnpID, pvarsnpID, riskAllele(BED), refAllele(BED), weight for a record
-                usesnps.append(pos+'_'+bed_alleles)
-                codesnps.append(pos+'_'+bed_alleles)    
-            else: # position overlap, but allele codes don't match regardless of flipping
-                bed_alleles = beddict.get(pos, 'n_n')
-                #tempinfo = posallele2weight.get(pos+'_'+bed_alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
-                #out_mismatch.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0], snp] + tempinfo[1:])) # chr, bp, OriginalsnpID, pvarsnpID, riskAllele(BED), refAllele(BED), weight for a record
-                usesnps.append(pos+'_'+bed_alleles)
-        elif line.startswith('#CHROM'):
-            pastheader=True    
-    # output the list of BED positions unmatched in pvar, or mismatched allele codes in pvar
-    bedvar = np.array(list(posallele2weight.keys()))
-    usedvar = np.array(usesnps)
-    codevar = np.array(codesnps)
-    missing_var = np.setdiff1d(bedvar, usedvar)
-    mismatched_var = np.setdiff1d(usedvar, codevar)
-    for var in missing_var:
-        tempinfo = posallele2weight.get(var, 'NA_NA_NA_NA').split('_')
-        out_missing.write('%s\n' % '\t'.join(var.split('_')[0].split(':') + [tempinfo[0].replace('$', '_')] + tempinfo[1:])) # chr, bp, OriginalsnpID, riskAllele(BED), refAllele(BED), weight for a record
+# retire the speed version
+#if speed == 'T': # brief version, no output of variant list being filtered, flipped etc.
+#    print('Brief version chosen. Wont output extra documents of variants flipped, unmatched, or missing.')
+#    for i,line in enumerate(open(pvar)):
+#        if i % 10000 == 0:
+#            print('on pvar line %s' % i)
+#        if pastheader:
+#            line = line.strip().split()
+#            pos = line[0] + ':' + line[1]
+#            alleles = '_'.join(sorted(line[3:5]))
+#            snp = line[2]
+#            if pos not in bedpos: #position not found in BED
+#                continue
+#            elif beddict.get(pos, 'n_n') == alleles: # positions overlap and allele code matches between bed and pvar
+#                tempinfo = posallele2weight.get(pos+'_'+alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
+#                if tempinfo[1] == line[4]: #risk allele is also the alternative allele:
+#                    if tempinfo[3] =='NA':
+#                        tempinfo[3] = '0'
+#                    outfile.write('%s\n' % '\t'.join([snp, tempinfo[1], tempinfo[3]]))
+#                else: # risk allele is the reference allele in pvar
+#                    if tempinfo[3]=='NA':
+#                        weight='0'
+#                    elif tempinfo[3].startswith('-'): #negative value
+#                        weight = tempinfo[3].strip('-')
+#                    else: # positive value,
+#                        weight = '-' + tempinfo[3]
+#                    outfile.write('%s\n' % '\t'.join([snp, tempinfo[2], weight]))
+#            elif beddict.get(pos, 'n_n') == '_'.join(sorted([flipstr(line[3]), flipstr(line[4])])): # positions overlap but strand flipped
+#                bed_alleles = beddict.get(pos, 'n_n')
+#                tempinfo = posallele2weight.get(pos+'_'+ bed_alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
+#                #flipped = flip.get(tempinfo[1], 'unknown_code')
+#                flipped = flipstr(tempinfo[1])
+#                if flipped == line[4]: #risk allele is also the alternative allele
+#                    if tempinfo[3] =='NA':
+#                        tempinfo[3] = '0'
+#                    outfile.write('%s\n' % '\t'.join([snp, flipped, tempinfo[3]]))
+#                else: # risk allele is the reference allele in pvar
+#                    if tempinfo[3]=='NA':
+#                        weight='0'
+#                    elif tempinfo[3].startswith('-'): #negative value
+#                        weight = tempinfo[3].strip('-')
+#                    else: # positive value
+#                        weight = '-' + tempinfo[3]
+#                    flipped = flipstr(tempinfo[2])
+#                    outfile.write('%s\n' % '\t'.join([snp, flipped, weight]))
+#            else: # position overlap, but allele code don't match regardless of flipping
+#                continue
+#        elif line.startswith('#CHROM'):
+#            pastheader=True    
+#else: # long version, output lists of variants being flipped on strand, or discarded due to either mismatching code or bp
+out_flip = open(bed.replace('.bed', '_flipped.list'), 'w') # flip and save in weight file
+out_mismatch = open(bed.replace('.bed', '_mismatch.list'), 'w') # need to remove from weight
+out_missing = open(bed.replace('.bed', '_missing_in_pvar.list'), 'w') # those in BED that are not found in pvar
+out_used = open(bed.replace('.bed', '_cleaned_forRecord.list'), 'w') # a record of variants being used
+for i,line in enumerate(open(pvar)):
+    if i % 10000 ==0:
+        print('on pvar line %s' % i)
+    if pastheader:
+        line = line.strip().split()
+        pos = line[0] + ':' + line[1]
+        alleles = '_'.join(sorted(line[3:5]))
+        snp = line[2]
+        if pos not in bedpos: #position not found in BED
+            continue
+        elif beddict.get(pos, 'NA') == alleles: # positions overlap and allele code matches between bed and pvar
+            tempinfo = posallele2weight.get(pos+'_'+alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
+            #if tempinfo[1] == line[4]: #risk allele is also the alternative allele:
+            if tempinfo[3] =='NA':
+                tempinfo[3] = '0'
+            outfile.write('%s\n' % '\t'.join([snp, tempinfo[1], tempinfo[3]]))
+            out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp] + tempinfo[1:]))
+            #else: # risk allele is the reference allele in pvar
+            #    if tempinfo[3] == 'NA':
+            #        weight = '0'
+            #    elif tempinfo[3].startswith('-'): #negative value
+            #        weight = tempinfo[3].strip('-')
+            #    else: # positive value
+            #        weight = '-' + tempinfo[3]
+            #    outfile.write('%s\n' % '\t'.join([snp, tempinfo[2], weight]))
+            #    out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp, tempinfo[2], tempinfo[1], weight]))
+            usesnps.append(pos + '_' + alleles)
+            codesnps.append(pos + '_' + alleles)  
+        elif beddict.get(pos, 'n_n') == '_'.join(sorted([flipstr(line[3]), flipstr(line[4])])): # positions overlap but strand flipped
+            bed_alleles = beddict.get(pos, 'n_n')
+            tempinfo = posallele2weight.get(pos+'_'+bed_alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
+            flipped = flipstr(tempinfo[1])
+            #if flipped == line[4]: #risk allele is also the alternative allele
+            if tempinfo[3] =='NA':
+                tempinfo[3] = '0'
+            outfile.write('%s\n' % '\t'.join([snp, flipped, tempinfo[3]]))
+            out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp, flipped, flipstr(tempinfo[2]), tempinfo[3]])) # needed to flip both risk and ref for the correct record
+            #else: # risk allele is the reference allele in pvar
+            #    if tempinfo[3] == 'NA':
+            #        weight = '0'
+            #    elif tempinfo[3].startswith('-'): #negative value
+            #        weight = tempinfo[3].strip('-')
+            #    else: # positive value
+            #        weight = '-' + tempinfo[3]
+            #    flipped = flipstr(tempinfo[2])
+            #    outfile.write('%s\n' % '\t'.join([snp, flipped, weight]))
+            #    out_used.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp, flipped, flipstr(tempinfo[1]), weight])) # needed to flip both risk and ref for the correct record
+            out_flip.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0].replace('$', '_'), snp] + tempinfo[1:])) # write chr, pos, OriginalsnpID, pvarsnpID, riskAllele(BED), refAllele(BED), weight for a record
+            usesnps.append(pos+'_'+bed_alleles)
+            codesnps.append(pos+'_'+bed_alleles)    
+        else: # position overlap, but allele codes don't match regardless of flipping
+            bed_alleles = beddict.get(pos, 'n_n')
+            #tempinfo = posallele2weight.get(pos+'_'+bed_alleles, 'NA_NA_NA_NA').split('_') # OriginalSnpID, riskA, refA, weight
+            #out_mismatch.write('%s\n' % '\t'.join(pos.split(':') + [tempinfo[0], snp] + tempinfo[1:])) # chr, bp, OriginalsnpID, pvarsnpID, riskAllele(BED), refAllele(BED), weight for a record
+            usesnps.append(pos+'_'+bed_alleles)
+    elif line.startswith('#CHROM'):
+        pastheader=True    
+# output the list of BED positions unmatched in pvar, or mismatched allele codes in pvar
+bedvar = np.array(list(posallele2weight.keys()))
+usedvar = np.array(usesnps)
+codevar = np.array(codesnps)
+missing_var = np.setdiff1d(bedvar, usedvar)
+mismatched_var = np.setdiff1d(usedvar, codevar)
+for var in missing_var:
+    tempinfo = posallele2weight.get(var, 'NA_NA_NA_NA').split('_')
+    out_missing.write('%s\n' % '\t'.join(var.split('_')[0].split(':') + [tempinfo[0].replace('$', '_')] + tempinfo[1:])) # chr, bp, OriginalsnpID, riskAllele(BED), refAllele(BED), weight for a record
     
-    for var in mismatched_var:
-        tempinfo = posallele2weight.get(var, 'NA_NA_NA_NA').split('_')
-        out_mismatch.write('%s\n' % '\t'.join(var.split('_')[0].split(':') + [tempinfo[0].replace('$', '_')] + tempinfo[1:]))
+for var in mismatched_var:
+    tempinfo = posallele2weight.get(var, 'NA_NA_NA_NA').split('_')
+    out_mismatch.write('%s\n' % '\t'.join(var.split('_')[0].split(':') + [tempinfo[0].replace('$', '_')] + tempinfo[1:]))
         
-    out_flip.close()
-    out_mismatch.close()
-    out_missing.close()
-    out_used.close()
+out_flip.close()
+out_mismatch.close()
+out_missing.close()
+out_used.close()
 
 outfile.close()
 pvartime=time.time()
