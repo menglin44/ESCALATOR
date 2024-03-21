@@ -14,15 +14,20 @@ builddict = {
     "hg17": "hg17",
 }
 
+build_field_dict = { # catalog version : build header
+    "1": "Original Genome Build"
+    "2": "genome_build"
+    "3":"HmPOS_build=GRCh38"
+}
 
 filename = sys.argv[-1]
-version = sys.argv[-2]  # pgs catalog format version
+version = sys.argv[-2]  # pgs catalog format version, 1, 2, or 3(their harmonized)
 
 ## pre-defined path
 dbsnp = "gs://hdchpcprodtis1-staging/Reference/dbSNP"
 
 ## assert params
-if not version in ["1", "2"]:
+if not version in ["1", "2", "3"]:
     print(
         "Unrecognized params for format version. Will detect version from the headers."
     )
@@ -37,6 +42,7 @@ else:
 pastheader = False
 nheader = 0
 build = "buildNA"
+build_field = build_field_dict.get(version,'genome_build')
 for ii, line in enumerate(infile):
     if pastheader:
         if ii == nheader + 1:
@@ -71,28 +77,42 @@ for ii, line in enumerate(infile):
         # if 'hg38' in line.lower() or 'grch38' in line.lower():
         #    build = 'hg38'
         line = line.strip().split()
-        if version != "2":
+        if version == "1":
             print(
                 "Formatting the input weight file: assuming the format version is in PGS catalog v1.0"
             )
+            rs_field = "rsID"
             oa_field = "reference_allele"
-        else:
+            chr_field = "chr_name"
+            pos_field = "chr_position"
+        elif version == "2":
             print(
                 "Formatting the input weight file: assuming the format version is in PGS catalog v2.0"
             )
+            rs_field = "rsID"
             oa_field = "other_allele"
-        minimum = ["rsID", "effect_allele", oa_field, "effect_weight"]
+            chr_field = "chr_name"
+            pos_field = "chr_position"
+        else:
+            print(
+                "Formatting the input weight file: assuming the format version is in PGS catalog v3.0"
+            )
+            rs_field = "hm_rsID"
+            oa_field = "other_allele"
+            chr_field = "hm_chr"
+            pos_field = "hm_pos"
+        minimum = [rs_field, "effect_allele", oa_field, "effect_weight"]
         required = [
-            "chr_name",
-            "chr_position",
+            chr_field,
+            pos_field,
             "effect_allele",
             oa_field,
             "effect_weight",
         ]
         stringent = [
-            "rsID",
-            "chr_name",
-            "chr_position",
+            rs_field,
+            chr_field,
+            pos_field,
             "effect_allele",
             oa_field,
             "effect_weight",
@@ -117,8 +137,8 @@ for ii, line in enumerate(infile):
             index = [line.index(field) for field in minimum]
             flag_dbsnp = True
             original_snps = []  # a list to preserve the orignal order of snps
-    elif "Original Genome Build" in line or "genome_build" in line:
-        build = builddict.get(line.strip().split("=")[1].strip().lower(), "buildNA")
+    elif build_field in line:
+        build = builddict.get(line.strip().split("=")[1].strip().lower(), "buildNA")       
     elif version == "NA" and "format_version=2.0" in line:
         version = "2"
 
