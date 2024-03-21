@@ -37,7 +37,7 @@ for(filename in as.character(score.list$V1)){
   }
 }
 
-if(ncol(scores)==3){
+if(ncol(scores)==4){
   scores2 <- scores[,-1] # trim the last column of tempID
 }else{
   scores2 <- scores
