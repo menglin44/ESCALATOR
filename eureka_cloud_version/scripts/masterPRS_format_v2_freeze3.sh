@@ -302,7 +302,7 @@ do
       cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_missing_in_pvar.list >> "${dest2}"/"${trait}"_missing_in_pvar.list
       cat "${dest2}"/chr"${CHR}"_duplicated.snps >> "${dest2}"/"${trait}"_duplicated.list
       cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_cleaned_forRecord.list >> "${dest2}"/"${trait}"_cleaned_forRecord.list
-      cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_at_cg.list >> "${dest2}"/"${trait}"_at_cg.list
+      cut -f 1,3,4,5,6,7 "${dest2}"/chr"${CHR}"_"${trait}"_hg38_at_cg.list >> "${dest2}"/"${trait}"_at_cg.list
 done
 echo -e "-----Done Step 3: Preparing to calculate PRS per chr-----\n\n" 2>&1 | tee -a "${log}"
 
