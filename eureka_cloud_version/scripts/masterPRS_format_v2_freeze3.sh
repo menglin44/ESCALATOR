@@ -216,15 +216,25 @@ do
 
     # subset weight bed file to the current working chromosome
     awk 'BEGIN {OFS="\t"}{if ($1=="chr""'"${CHR}"'") print $0}' "${dest2}"/"${trait}"_hg38.bed > "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed
+    
     # skip if no variants present
     nline=$(wc -l "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed | awk '{print $1}')
     if [[ ${nline} == "0" ]]
     then
         continue
     fi 
+
     # cp the pgen file
     #gsutil -qm cp gs://hdchpcprodtis1-staging/mlin/freeze2_pgen/chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.* .
     # gsutil -qm cp ${pdir}/chr${CHR}_${pfile}.* .
+
+    # in case the pgen file doesn't have this chr available
+    if [ ! -f "${pfile_dir}"/chr"${CHR}"_${pfile}.pvar ]
+    then
+        echo "Warning: did not detect "${pfile_dir}"/chr"${CHR}"_${pfile}.p*. Will skip this chromosome."  2>&1 | tee -a "${log}"
+        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed >> "${dest2}"/"${trait}"_missing_in_pvar.list
+        continue
+    fi
     
     # remove ambiguous loci (or not)
     if [[ "${rm_amb}" == "T" ]]
