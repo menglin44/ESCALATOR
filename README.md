@@ -28,13 +28,13 @@ The pipeline takes care of build lifting, strand flipping, allele code mismatchi
 In light of using the containerized version, ESCALATOR can be run as 
 
 ```bash
-singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh [reformatting script designed (1, 2, or F)] \
+singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh [reformatting script designed (1, 2, 3, or F)] \
 [input directory (where weight file is)] \
 [weight input filename] \
 [output directory] \
-[trait name (trait_PGSxxx)] \
+[trait name (e.g. trait_PGSxxx)] \
 [pfile directory] \
-[pfile prefix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR] \
+[pfile midfix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR] \
 [whether to remove variants with ambiguous codes - T or F]
 ```
 
