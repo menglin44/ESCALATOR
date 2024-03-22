@@ -34,7 +34,8 @@ singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh [reformatting s
 [output directory] \
 [trait name (trait_PGSxxx)] \
 [pfile directory] \
-[pfile prefix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR]
+[pfile prefix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR] \
+[whether to remove variants with ambiguous codes - T or F]
 ```
 
 Detailed explanations for logistics, along with usage examples, are described in the [vignette](escalator_container/ESCALATOR_container_readme.pdf) .
