@@ -236,7 +236,7 @@ do
         n_atcg_all=$((n_atcg_all + n_atcg))
     else
         mv "${dest2}"/chr"${CHR}"_"${trait}"_hg38.bed "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg.bed # for keeping downstream file names consistent - "noAtCg" in the name doesnt mean amb var removed
-        touch chr${CHR}_${trait}_hg38_at_cg.list # an empty file
+        touch "${dest2}"/chr${CHR}_${trait}_hg38_at_cg.list # an empty file
         bed="chr${CHR}_${trait}_hg38_noAtCg.bed"
         nout=$(wc -l "${dest2}"/"${bed}" | awk '{print $1}')
         n_atcg_all=0
