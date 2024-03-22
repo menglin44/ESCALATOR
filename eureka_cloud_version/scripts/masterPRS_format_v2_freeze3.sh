@@ -266,7 +266,7 @@ do
         cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_missing_in_pvar.list >> "${dest2}"/"${trait}"_missing_in_pvar.list
         cat "${dest2}"/chr"${CHR}"_duplicated.snps >> "${dest2}"/"${trait}"_duplicated.list
         cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_noAtCg_cleaned_forRecord.list >> "${dest2}"/"${trait}"_cleaned_forRecord.list
-        cat "${dest2}"/chr"${CHR}"_"${trait}"_hg38_at_cg.list >> "${dest2}"/"${trait}"_at_cg.list
+        cut -f 1,3,4,5,6,7 "${dest2}"/chr"${CHR}"_"${trait}"_hg38_at_cg.list >> "${dest2}"/"${trait}"_at_cg.list
         #rm chr${CHR}_freeze2_merged_overlapped_sites_INFOupdated.*
         # rm chr${CHR}_${pfile}.* #uncomment
         continue
