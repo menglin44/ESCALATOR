@@ -34,7 +34,7 @@ singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh [reformatting s
 [output directory] \
 [trait name (e.g. trait_PGSxxx)] \
 [pfile directory] \
-[pfile midfix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR] \
+[pfile infix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR] \
 [whether to remove variants with ambiguous codes - T or F]
 ```
 
