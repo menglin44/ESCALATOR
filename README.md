@@ -21,7 +21,7 @@ This is a pipeline for harmonizing and calculating polygenic scores on a genetic
 
 The pipeline takes care of build lifting, strand flipping, allele code mismatching etc. between external weights of PRS and the target genetic data, and calculation of final scores. 
 
-<img src="https://github.com/menglin44/ESCALATOR/assets/16557724/4fa4ccf2-6f47-4a2c-a1bd-d96cf106b41c" width=70% height=70%>
+<img src="https://github.com/menglin44/ESCALATOR/assets/16557724/13a5464e-f111-425d-bdcb-caed6ab68ca5" width=70% height=70%>
 
 ### Usage
 
