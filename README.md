@@ -1,18 +1,56 @@
 # ESCALATOR
-### polyg**E**nic **S**core **CA**lcu**LAT**ion On eu**R**eka 
+### polyg**E**nic **SC**ore h**A**rmonization and calcu**LAT**i**O**n sc**R**ipts
+(Previous a.k.a. polyg**E**nic **S**core **CA**lcu**LAT**ion On eu**R**eka)
 
-This README file provides basic information re background and versions of the pipeline. Please see [prs_pipeline_readme.pdf](eureka_cloud_version/prs_pipeline_readme.pdf) for explanations and example usages. (Note: the master/wrapper script **masterPRS_format_v2_freeze3.sh** is located under scripts/ folder)
+<img src="https://github.com/menglin44/ESCALATOR/assets/16557724/b5d68aa1-e18d-4a26-bd7d-751eace24011" width=20% height=20%>
 
-The current version of directory hosts all scripts of the pipeline being used for quality control and calculation of polygenic scores of external weights for CCPM Biobank, which is imputed against TOPMed references and hosted/run on Google cloud based Eureka HPC. 
+This is a pipeline for harmonizing and calculating polygenic scores on a genetic dataset. 
 
-Briefly, the pipeline takes care of build lifting, strand flipping, allele code mismatching etc. between external weights of PRS and the target genetic data, and calculation of final scores. 
+* The original pipeline, specifically developed and to run on Eureka cloud platform for Colorado Center for Personalized Medicine, is archived under the subfolder [eureka_cloud_version](eureka_cloud_version)
+
+* For general use on extensive platforms, we provide a containerized copy. Due to the file size of the container image, we do not host the image in this github, instead we offer
+
+   - (1) the scripts and def file to build your container, with [instructions](https://github.com/MatthewFisher126/ESCALATOR?tab=readme-ov-file#using-the-container) from Matthew Fisher (matthew.j.fisher@cuanschutz.edu),
+
+   - (2) or as an alternate, directly download the ready-to-use container image momentarily hosted [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/EUhdyKWBfIZPnTSixfNsMLMB71Z-moUIn01oz158jNKWkw).
+ 
+(Please refer to the [separate folk](https://github.com/MatthewFisher126/ESCALATOR) for Matt's explanations and changes of generalized scripts and instructions of building the container)
 
 
-![PRS_using_existed_weights](https://user-images.githubusercontent.com/16557724/223905146-c5acf2ae-9a67-4576-bbcc-8781e3e89073.png)
+### Overview
+
+The pipeline takes care of build lifting, strand flipping, allele code mismatching etc. between external weights of PRS and the target genetic data, and calculation of final scores. 
+
+<img src="https://github.com/menglin44/ESCALATOR/assets/16557724/13a5464e-f111-425d-bdcb-caed6ab68ca5" width=70% height=70%>
+
+### Usage
+
+In light of using the containerized version, ESCALATOR can be run as 
+
+```bash
+singularity exec escalator-v1.sif masterPRS_format_v2_freeze3.sh [reformatting script designed (1, 2, 3, or F)] \
+[input directory (where weight file is)] \
+[weight input filename] \
+[output directory] \
+[trait name (e.g. trait_PGSxxx)] \
+[pfile directory] \
+[pfile infix name - ex: chr22_freeze3_dosages_PAIR.pgen = freeze3_dosages_PAIR] \
+[whether to remove variants with ambiguous codes - T or F]
+```
+
+Detailed explanations for logistics, along with usage examples, are described in the [vignette](escalator_container/ESCALATOR_container_readme.pdf) .
 
 
 
-This directory is temporary and being improved, and a more generic version of pipeline / container for customizable genetic data and non-cloud based environment will be added.
 
-meng.lin@cuanschutz.edu
+
+
+
+### Contact
+Meng Lin (meng.lin@cuanschutz.edu) or Matthew Fisher (matthew.j.fisher@cuanschutz.edu)
+
+
+
+
+
 
