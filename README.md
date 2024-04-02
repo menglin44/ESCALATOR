@@ -14,7 +14,7 @@ This is a pipeline for harmonizing and calculating polygenic scores on a genetic
 
    - (2) or as an alternate, directly download the ready-to-use container image momentarily hosted [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/EUhdyKWBfIZPnTSixfNsMLMB71Z-moUIn01oz158jNKWkw).
  
-(Please refer to the [separate folk](https://github.com/MatthewFisher126/ESCALATOR) for Matt's explanations and changes of generalized scripts and instructions of building the container)
+(Please refer to the [separate fork](https://github.com/MatthewFisher126/ESCALATOR) for Matt's explanations and changes of generalized scripts and instructions of building the container)
 
 
 ### Overview
