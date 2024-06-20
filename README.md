@@ -6,15 +6,15 @@
 
 This is a pipeline for harmonizing and calculating polygenic scores on a genetic dataset. 
 
-* The original pipeline, specifically developed and to run on Eureka cloud platform for Colorado Center for Personalized Medicine, is archived under the subfolder [eureka_cloud_version](eureka_cloud_version)
-
 * For general use on extensive platforms, we provide a containerized copy. Due to the file size of the container image, we do not host the image in this github, instead we offer
 
    - (1) the scripts and def file to build your container, with [instructions](https://github.com/MatthewFisher126/ESCALATOR?tab=readme-ov-file#using-the-container) from Matthew Fisher (matthew.j.fisher@cuanschutz.edu),
 
-   - (2) or as an alternate, directly download the ready-to-use container image momentarily hosted [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/EUhdyKWBfIZPnTSixfNsMLMB71Z-moUIn01oz158jNKWkw).
+   - (2) or as an alternate, directly download the ready-to-use container image momentarily hosted [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/EQ8IM0p0itZHgKGqKge6JY0BVXAovZ66TpeV6waKr100DQ).
  
 (Please refer to the [separate fork](https://github.com/MatthewFisher126/ESCALATOR) for Matt's explanations and changes of generalized scripts and instructions of building the container)
+
+* The deprecated original pipeline scripts, initially developed for Eureka cloud platform for Colorado Center for Personalized Medicine, are archived under the subfolder [eureka_hpc_deprecated](eureka_hpc_deprecated). They are not recommeneded to be used.
 
 
 ### Overview
@@ -27,7 +27,7 @@ The pipeline takes care of build lifting, strand flipping, allele code mismatchi
 
 In light of using the containerized version, ESCALATOR can be run as 
 
-```bash
+```
 singularity exec escalator-v2.sif masterPRS_v4.sh [reformatting script designed (1, 2, or 3)] \
 [input directory (where weight file is)] \
 [weight input filename] \
