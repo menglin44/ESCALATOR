@@ -2,7 +2,7 @@
 
 ## Download the container image
 
-We have uploaded a container image at a momentary location [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/EUhdyKWBfIZPnTSixfNsMLMB71Z-moUIn01oz158jNKWkw)
+We have uploaded a container image at a momentary location [here](https://olucdenver-my.sharepoint.com/:u:/g/personal/meng_lin_cuanschutz_edu/EQ8IM0p0itZHgKGqKge6JY0BVXAovZ66TpeV6waKr100DQ)
 
 ## Container fork
 
