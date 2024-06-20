@@ -27,7 +27,7 @@ The pipeline takes care of build lifting, strand flipping, allele code mismatchi
 
 In light of using the containerized version, ESCALATOR can be run as 
 
-```bash
+```
 singularity exec escalator-v2.sif masterPRS_v4.sh [reformatting script designed (1, 2, or 3)] \
 [input directory (where weight file is)] \
 [weight input filename] \
